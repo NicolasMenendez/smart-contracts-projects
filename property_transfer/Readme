@@ -1,3 +1,4 @@
+This project is contains a simple html UI and a smart contract which is capable of handling property transfers.
 
 Considerations for testing:
 1. The Html file contains an already created Contract address with some transactions to it.
