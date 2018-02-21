@@ -1,9 +1,7 @@
 pragma solidity ^0.4.0;
 
-
 contract propertyTransfer {
-    
-
+   
     struct property {
         address owner;
         address prevOwner;
