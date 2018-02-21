@@ -1,0 +1,4 @@
+
+Considerations for testing:
+1. The Html file contains an already created Contract address with some transactions to it.
+2. You may create a new contract and update the html file for testing purposes.
