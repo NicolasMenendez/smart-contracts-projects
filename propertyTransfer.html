@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Property Transfer</title>
+	<script src="http://rawgit.com/ethereum/web3.js/0.16.0/dist/web3.min.js"></script>
+	<script
+	  src="https://code.jquery.com/jquery-3.1.1.min.js"
+	  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+	  crossorigin="anonymous"></script>
+	 <script>
+		window.addEventListener('load', function() {
+		  // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+		  if (typeof web3 !== 'undefined') {
+		    // Use Mist/MetaMask's provider
+		    web3 = new Web3(web3.currentProvider); 
+		  } else {
+		    console.log('No web3? You should consider trying MetaMask!')
+		    // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
+		    web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+		  }
+      var abi =[{"constant":false,"inputs":[{"name":"propertyID","type":"uint256"},{"name":"receiver","type":"address"}],"name":"assignProperty","outputs":[],"payable":false,"type":"function","stateMutability":"nonpayable"},{"constant":true,"inputs":[],"name":"propertyAssigner","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function","stateMutability":"view"},{"constant":false,"inputs":[{"name":"propertyInformation","type":"string"},{"name":"propertyCost","type":"uint256"}],"name":"newProperty","outputs":[{"name":"propertyID","type":"uint256"}],"payable":false,"type":"function","stateMutability":"nonpayable"},{"constant":false,"inputs":[{"name":"propertyID","type":"uint256"},{"name":"receiver","type":"address"},{"name":"salePrice","type":"uint256"}],"name":"transferProperty","outputs":[],"payable":false,"type":"function","stateMutability":"nonpayable"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"properties","outputs":[{"name":"owner","type":"address"},{"name":"prevOwner","type":"address"},{"name":"salePrice","type":"uint256"},{"name":"propertyInformation","type":"string"}],"payable":false,"type":"function","stateMutability":"view"},{"inputs":[],"payable":false,"type":"constructor","stateMutability":"nonpayable"},{"anonymous":false,"inputs":[{"indexed":false,"name":"sender","type":"address"},{"indexed":false,"name":"error","type":"string"}],"name":"Error1","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"propID","type":"uint256"},{"indexed":false,"name":"from","type":"address"},{"indexed":false,"name":"propertyInformation","type":"string"},{"indexed":false,"name":"propertyCost","type":"uint256"}],"name":"NewProp","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"propID","type":"uint256"},{"indexed":false,"name":"from","type":"address"},{"indexed":false,"name":"to","type":"address"},{"indexed":false,"name":"salePrice","type":"uint256"}],"name":"Assign","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"propID","type":"uint256"},{"indexed":false,"name":"from","type":"address"},{"indexed":false,"name":"to","type":"address"},{"indexed":false,"name":"salePrice","type":"uint256"}],"name":"PropTransfer","type":"event"}];
+      var MyContract = web3.eth.contract(abi);
+      var myContractInstance = MyContract.at('0x3cbd378dcb18df41c75dbfc214da3f7fef20bee7');
+		  // Now you can start your app & access web3 freely:
+		  startApp(abi,MyContract,myContractInstance);
+		})
+  </script>
+  </head>
+
+  <body>
+   <div>
+        <h4>
+			Add New Property - can only be called from Property Assigner, failed otherwise. 
+        </h4>
+	<fieldset>
+	<legend>New property information:</legend>
+        <h5>
+			Location
+        </h5>
+		
+        <div> Street Name : <input id='streetName'>         Street Number : <input id='streetNumber'> </div>
+	<br>
+	<div> City or Town : <input id='cityOrTown'>       Village : <input id='village'>  Zip Code : <input id='zipCode'> </div>		
+	<br>	
+        <h5>
+			Further Information
+        </h5>
+		
+        <div> Land size: <input id='landSize'>     Building Size: <input id='buildingSize'> Property Type : <input id='propertyType'> Property Cost : <input id='propertyCost'>  </div> 
+	<br>
+	<div>Number of Beds : <input id='numberOfBeds'>  Number of baths : <input id='numberOfBaths'>  Parcel : <input id='parcel'> </div>		
+	<br>	
+	<div>Description : <input id='description' style='height:50px;width:700px'>   </div>		
+	</fieldset>
+        <br>		
+        </div>
+		</div>
+			<button onclick='addProperty()'>Add Property</button>
+		</div>
+		<hr/>
+		<p>Events generated for the new properties:
+			<h3 id='callback'></h3>
+		</p>
+        <hr/>
+		<h4>
+			Assign property - can only be called from Property Assigner, failed otherwise.
+		</h4>
+		<fieldset>
+	<legend>Property Assignation</legend>
+		<div>
+			Receiver Address : <input id='receiverAdd1'>
+        </div>
+	<br>
+        <div>
+			Property ID : <input id='propertyId1'>
+        </div>
+       </fieldset>
+	<br>
+        <button onclick='assignProperty()'>Assign</button>
+      </div>
+	  <hr/>
+		<p>Events generated for assigning properties:
+			<h3 id='callback1'></h3>
+		</p>
+      <hr/>
+		<h4>
+			Transfer property 
+		</h4>
+		<fieldset>
+	<legend>Transfer of property</legend>
+		<div>
+			Receiver Address : <input id='receiverAdd2'>
+        </div>
+	<br>
+        <div>
+			Property ID : <input id='propertyId2'>
+        </div>
+        <br>
+         <div>
+			Sale Price : <input id='salePrice'> 
+        </div>
+        </fieldset>
+		<br>
+        <button onclick='transferProperty()'>Transfer</button>
+      </div>
+	  <hr/>
+		<p>Events generated for transfering properties :
+			<h3 id='callback2'></h3>
+		</p>
+	<hr/>
+     
+
+      <div>
+		All new properties Events
+	  </div>
+		<button onclick='handleAllNewPropertiesEvent()'> All new properties events</button>
+		<p>Events:
+			<h3 id='AllnewProperties'></h3>
+		</p>
+		<hr/>
+		 <div>
+		All property Assignation Events
+	  </div>
+		<button onclick='handleAllPropertyAssignationEvent()'> All property assignation events</button>
+		<p>Events:
+			<h3 id='AllPropertyAssignations'></h3>
+		</p>
+		<hr/>
+		 <div>
+		All new properties Events
+	  </div>
+		<button onclick='handleAllPropertyTransferEvent()'> All Transfer property events</button>
+		<p>Events:
+			<h3 id='AlltransferProperties'></h3>
+		</p>
+		<hr/>
+		
+<script type="text/javascript" src='app.js'>
+
+</script>
+
+  </body>
+</html>
