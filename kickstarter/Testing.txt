@@ -1,0 +1,8 @@
+Testing environment used: Mac Os Sierra version 10.12.6, node version v10.1.0, Rinskeby Test Network,
+ Metamask (You need to have some amount of ethers in the account).
+
+Steps for testing: 
+1. Open terminal and go to the project directory (example: ../../kickstarter)
+2. write the command: npm run dev, it will run a local server in http://localhost:3000/
+3. Open chrome browser with metamask installed and logged in.
+4. Open http://localhost:3000/ in chrome.
